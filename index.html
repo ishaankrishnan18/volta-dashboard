@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volta AI — Submission Intake Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #1e40af;
+      --blue-light: #3b82f6;
+      --blue-pale:  #eff6ff;
+      --green:      #16a34a;
+      --green-pale: #f0fdf4;
+      --red:        #dc2626;
+      --red-pale:   #fef2f2;
+      --orange:     #ea580c;
+      --orange-pale:#fff7ed;
+      --yellow:     #ca8a04;
+      --yellow-pale:#fefce8;
+      --navy:       #0f172a;
+      --navy-mid:   #1e293b;
+      --navy-light: #334155;
+      --text:       #111827;
+      --text-muted: #6b7280;
+      --border:     #e5e7eb;
+      --bg:         #f9fafb;
+      --white:      #ffffff;
+      --radius:     10px;
+      --shadow:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:  0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -2px rgba(0,0,0,.05);
+      --sidebar-w:  240px;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--navy-light);
+    }
+    .sidebar-logo .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-icon svg { width: 20px; height: 20px; }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand-name { font-size: 15px; font-weight: 700; color: var(--white); letter-spacing: -.2px; }
+    .brand-sub  { font-size: 10px; font-weight: 500; color: #94a3b8; letter-spacing: .5px; text-transform: uppercase; }
+
+    .sidebar-nav {
+      padding: 12px 12px;
+      flex: 1;
+    }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 8px 8px 6px;
+      margin-top: 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      color: #94a3b8;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      text-decoration: none;
+      user-select: none;
+    }
+    .nav-item:hover   { background: var(--navy-light); color: #e2e8f0; }
+    .nav-item.active  { background: var(--blue); color: var(--white); }
+    .nav-item svg     { width: 16px; height: 16px; flex-shrink: 0; opacity: .85; }
+    .nav-item.active svg { opacity: 1; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--navy-light);
+      font-size: 11px;
+      color: #475569;
+      font-weight: 500;
+    }
+    .sidebar-footer span { color: var(--blue-light); }
+
+    /* ── MAIN ── */
+    #main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    #topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.3px;
+    }
+    .topbar-left p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    #refresh-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+    .refresh-dot {
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .4; }
+    }
+    #refresh-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    #refresh-btn:hover { background: #1d3a9e; }
+
+    /* ── CONTENT ── */
+    #content {
+      padding: 24px 28px;
+      flex: 1;
+    }
+
+    /* ── LOADING / ERROR / EMPTY ── */
+    #loading-state, #error-state, #empty-state {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #error-state { color: var(--red); }
+    .error-icon { font-size: 36px; margin-bottom: 12px; }
+
+    /* ── SUMMARY CARDS ── */
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .card-icon svg { width: 22px; height: 22px; }
+    .card.blue  .card-icon { background: var(--blue-pale);   color: var(--blue); }
+    .card.green .card-icon { background: var(--green-pale);  color: var(--green); }
+    .card.red   .card-icon { background: var(--red-pale);    color: var(--red); }
+    .card.orange .card-icon { background: var(--orange-pale); color: var(--orange); }
+    .card-body {}
+    .card-value {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.5px;
+    }
+    .card.blue  .card-value { color: var(--blue); }
+    .card.green .card-value { color: var(--green); }
+    .card.red   .card-value { color: var(--red); }
+    .card.orange .card-value { color: var(--orange); }
+    .card-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── CHARTS ROW ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .chart-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .chart-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: -.2px;
+    }
+    .chart-wrap {
+      position: relative;
+    }
+    #donut-wrap  { height: 200px; display: flex; align-items: center; justify-content: center; }
+    #bar-wrap    { height: 200px; }
+
+    /* ── FILTERS ── */
+    .filter-bar {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .filter-group label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-right: 4px;
+    }
+    .filter-btn {
+      padding: 4px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover  { border-color: var(--blue-light); color: var(--blue); }
+    .filter-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+    .filter-divider    { width: 1px; height: 20px; background: var(--border); }
+    .search-wrap {
+      flex: 1;
+      min-width: 180px;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 14px; color: var(--text-muted); pointer-events: none;
+    }
+    #search-input {
+      width: 100%;
+      padding: 6px 10px 6px 32px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+    }
+    #search-input:focus { border-color: var(--blue-light); background: white; }
+
+    /* ── TABLE ── */
+    .table-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .table-header-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    #row-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+    }
+    .table-scroll { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      background: var(--bg);
+      padding: 9px 14px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .1s;
+      border-left: 3px solid transparent;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f8faff; }
+    tbody tr.status-ready      { border-left-color: var(--green); }
+    tbody tr.status-incomplete { border-left-color: var(--red); }
+    tbody td {
+      padding: 11px 14px;
+      font-size: 13px;
+      vertical-align: middle;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .td-secondary { color: var(--text-muted); font-size: 12px; }
+
+    /* progress bar */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      min-width: 60px;
+      max-width: 80px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .3s;
+    }
+    .progress-fill.high   { background: var(--green); }
+    .progress-fill.mid    { background: var(--yellow); }
+    .progress-fill.low    { background: var(--red); }
+    .progress-pct {
+      font-size: 12.5px;
+      font-weight: 600;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    /* badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-green  { background: var(--green-pale);  color: var(--green); }
+    .badge-red    { background: var(--red-pale);    color: var(--red); }
+    .badge-yellow { background: var(--yellow-pale); color: var(--yellow); }
+    .badge-orange { background: var(--orange-pale); color: var(--orange); }
+    .badge-blue   { background: var(--blue-pale);   color: var(--blue); }
+    .badge-gray   { background: var(--bg);          color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* ── DETAIL PANEL ── */
+    #panel-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.25);
+      z-index: 200;
+      backdrop-filter: blur(1px);
+    }
+    #detail-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: 440px;
+      max-width: 96vw;
+      height: 100vh;
+      background: var(--white);
+      box-shadow: -4px 0 30px rgba(0,0,0,.12);
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+    }
+    #detail-panel.open { transform: translateX(0); }
+    #panel-overlay.open { display: block; }
+    .panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .panel-header-info {}
+    .panel-id { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 2px; }
+    .panel-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
+    #panel-close {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: background .15s;
+    }
+    #panel-close:hover { background: var(--border); }
+    #panel-close svg { width: 14px; height: 14px; }
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .panel-section { margin-bottom: 22px; }
+    .panel-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 7px;
+      align-items: flex-start;
+    }
+    .panel-key {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 130px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+    .panel-val {
+      font-size: 13px;
+      color: var(--text);
+      flex: 1;
+      word-break: break-word;
+    }
+    .panel-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 2px;
+    }
+    .panel-list-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      background: var(--red-pale);
+      color: var(--red);
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .panel-list-item svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .panel-list-item.empty-ok {
+      background: var(--green-pale);
+      color: var(--green);
+    }
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .big-progress {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .big-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+    }
+    .big-progress-fill.high  { background: var(--green); }
+    .big-progress-fill.mid   { background: var(--yellow); }
+    .big-progress-fill.low   { background: var(--red); }
+    .panel-notes {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .cards-row { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      #sidebar { transform: translateX(-100%); width: 240px; }
+      #sidebar.open { transform: translateX(0); }
+      #main { margin-left: 0; }
+      #content { padding: 16px; }
+      #topbar { padding: 0 16px; }
+      .cards-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .filter-bar { gap: 8px; }
+    }
+    @media (max-width: 500px) {
+      .cards-row { grid-template-columns: 1fr 1fr; }
+      .card-value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <a class="brand" href="#">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Volta AI</span>
+        <span class="brand-sub">Insurance</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-label">Submissions</div>
+    <a class="nav-item active" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+      All Submissions
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analytics
+    </a>
+
+    <div class="nav-label">Management</div>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Producers
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Settings
+    </a>
+  </div>
+
+  <div class="sidebar-footer">Powered by <span>Volta AI</span> &copy; 2026</div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- TOPBAR -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <h1>Submission Intake</h1>
+      <p>Commercial P&amp;C — Live Dashboard</p>
+    </div>
+    <div class="topbar-right">
+      <div id="refresh-info">
+        <div class="refresh-dot"></div>
+        <span>Refreshing in <strong id="countdown">60</strong>s</span>
+      </div>
+      <button id="refresh-btn" onclick="fetchData()">&#8635; Refresh</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main id="content">
+
+    <!-- LOADING -->
+    <div id="loading-state">
+      <div class="spinner"></div>
+      <p style="color:var(--text-muted);font-size:14px;">Loading submissions…</p>
+    </div>
+
+    <!-- ERROR -->
+    <div id="error-state">
+      <div class="error-icon">⚠️</div>
+      <p style="font-weight:700;font-size:15px;margin-bottom:6px;">Failed to load data</p>
+      <p id="error-msg" style="font-size:13px;color:var(--text-muted);"></p>
+      <button onclick="fetchData()" style="margin-top:16px;padding:8px 20px;background:var(--blue);color:white;border:none;border-radius:7px;cursor:pointer;font-weight:600;">Retry</button>
+    </div>
+
+    <!-- EMPTY -->
+    <div id="empty-state">
+      <div style="font-size:36px;margin-bottom:12px;">📋</div>
+      <p style="font-weight:700;font-size:15px;">No submissions found</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">The sheet appears to be empty or no rows match your filters.</p>
+    </div>
+
+    <!-- DASHBOARD (hidden until data loads) -->
+    <div id="dashboard" style="display:none;">
+
+      <!-- CARDS -->
+      <div class="cards-row">
+        <div class="card blue">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-value" id="card-total">—</div>
+            <div class="card-label">Total Submissions</div>
+          </div>
+        </div>
+        <div class="card green">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-value" id="card-ready">—</div>
+            <div class="card-label">Ready for Review</div>
+          </div>
+        </div>
+        <div class="card red">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-value" id="card-incomplete">—</div>
+            <div class="card-label">Incomplete</div>
+          </div>
+        </div>
+        <div class="card orange">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-value" id="card-high">—</div>
+            <div class="card-label">High Priority</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Complete vs Incomplete</div>
+          <div id="donut-wrap">
+            <canvas id="donutChart" width="200" height="200"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Submissions by Line of Business</div>
+          <div id="bar-wrap">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Status</label>
+          <button class="filter-btn active" data-filter="status" data-value="all">All</button>
+          <button class="filter-btn" data-filter="status" data-value="READY_FOR_REVIEW">Ready</button>
+          <button class="filter-btn" data-filter="status" data-value="INCOMPLETE">Incomplete</button>
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-group">
+          <label>Priority</label>
+          <button class="filter-btn active" data-filter="priority" data-value="all">All</button>
+          <button class="filter-btn" data-filter="priority" data-value="HIGH">High</button>
+          <button class="filter-btn" data-filter="priority" data-value="MEDIUM">Medium</button>
+          <button class="filter-btn" data-filter="priority" data-value="LOW">Low</button>
+        </div>
+        <div class="filter-divider"></div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-input" placeholder="Search insured or producer…" oninput="renderTable()" />
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-header-title">Submissions</div>
+          <div id="row-count">0 results</div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Received</th>
+                <th>Insured Name</th>
+                <th>Line of Business</th>
+                <th>State</th>
+                <th>Revenue</th>
+                <th>Completeness</th>
+                <th>Confidence</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+  </main>
+</div><!-- /main -->
+
+<!-- DETAIL PANEL OVERLAY -->
+<div id="panel-overlay" onclick="closePanel()"></div>
+
+<!-- DETAIL PANEL -->
+<div id="detail-panel">
+  <div class="panel-header">
+    <div class="panel-header-info">
+      <div class="panel-id" id="panel-sub-id"></div>
+      <div class="panel-name" id="panel-sub-name"></div>
+    </div>
+    <button id="panel-close" onclick="closePanel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────────────────────
+  const SHEET_ID   = '1WkxOvKbVmMl_1RNCtCpsTbhBz9lCtBSsQLmWX0XjFYc';
+  const SHEET_NAME = 'Submissions Log';
+  const API_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+  // Column indices (0-based), matching the stated order
+  const COL = {
+    submission_id:      0,
+    received_at:        1,
+    status:             2,
+    priority:           3,
+    priority_emoji:     4,
+    insured_name:       5,
+    line_of_business:   6,
+    submission_type:    7,
+    insured_state:      8,
+    annual_revenue:     9,
+    effective_date:     10,
+    completeness_score: 11,
+    confidence_score:   12,
+    missing_fields:     13,
+    missing_documents:  14,
+    producer_name:      15,
+    producer_email:     16,
+    prior_carrier:      17,
+    processing_notes:   18,
+  };
+
+  // ── STATE ───────────────────────────────────────────────────────────────────
+  let allRows      = [];
+  let activeStatus   = 'all';
+  let activePriority = 'all';
+  let donutChart     = null;
+  let barChart       = null;
+  let countdownVal   = 60;
+  let countdownTimer = null;
+
+  // ── HELPERS ─────────────────────────────────────────────────────────────────
+  function cellVal(row, idx) {
+    const c = row.c ? row.c[idx] : null;
+    if (!c || c.v === null || c.v === undefined) return '';
+    // For formatted value use c.f, else c.v
+    return c.f !== undefined && c.f !== null ? String(c.f) : String(c.v);
+  }
+  function cellRaw(row, idx) {
+    const c = row.c ? row.c[idx] : null;
+    if (!c || c.v === null || c.v === undefined) return '';
+    return c.v;
+  }
+
+  function fmtDate(raw) {
+    if (!raw) return '—';
+    // gviz returns dates as "Date(year,month0,day)" strings or native dates
+    let d;
+    if (typeof raw === 'string' && raw.startsWith('Date(')) {
+      const parts = raw.replace('Date(','').replace(')','').split(',').map(Number);
+      d = new Date(parts[0], parts[1], parts[2]);
+    } else {
+      d = new Date(raw);
+    }
+    if (isNaN(d)) return raw;
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  function fmtRevenue(val) {
+    if (!val) return '—';
+    const n = parseFloat(String(val).replace(/[^0-9.]/g,''));
+    if (isNaN(n)) return val;
+    if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
+    if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return '$' + (n/1e3).toFixed(0) + 'K';
+    return '$' + n.toLocaleString();
+  }
+
+  function fmtPct(val) {
+    if (val === '' || val === null || val === undefined) return '—';
+    const n = parseFloat(val);
+    if (isNaN(n)) return val;
+    // handle decimal 0–1 range
+    return (n <= 1 ? Math.round(n * 100) : Math.round(n)) + '%';
+  }
+
+  function pctNum(val) {
+    if (val === '' || val === null || val === undefined) return 0;
+    const n = parseFloat(val);
+    if (isNaN(n)) return 0;
+    return n <= 1 ? Math.round(n * 100) : Math.round(n);
+  }
+
+  function progressClass(pct) {
+    if (pct >= 80) return 'high';
+    if (pct >= 50) return 'mid';
+    return 'low';
+  }
+
+  function splitList(val) {
+    if (!val) return [];
+    return String(val).split(/[,;|\n]+/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function priorityBadge(priority, emoji) {
+    const p = String(priority).toUpperCase();
+    const em = emoji || '';
+    if (p === 'HIGH')   return `<span class="badge badge-red">${em} High</span>`;
+    if (p === 'MEDIUM') return `<span class="badge badge-yellow">${em} Medium</span>`;
+    if (p === 'LOW')    return `<span class="badge badge-green">${em} Low</span>`;
+    return `<span class="badge badge-gray">${em} ${priority}</span>`;
+  }
+
+  function statusBadge(status) {
+    const s = String(status).toUpperCase();
+    if (s === 'READY_FOR_REVIEW') return `<span class="badge badge-green">&#10003; Ready for Review</span>`;
+    if (s === 'INCOMPLETE')       return `<span class="badge badge-red">&#9679; Incomplete</span>`;
+    return `<span class="badge badge-gray">${status}</span>`;
+  }
+
+  // ── FETCH ────────────────────────────────────────────────────────────────────
+  async function fetchData() {
+    showState('loading');
+    resetCountdown();
+    try {
+      const res  = await fetch(API_URL + '&t=' + Date.now());
+      const text = await res.text();
+      // Strip JSONP wrapper
+      const json = text
+        .replace(/^[^(]+\(/, '')  // remove everything up to first (
+        .replace(/\);\s*$/, '');  // remove trailing );
+      const data = JSON.parse(json);
+
+      if (!data.table || !data.table.rows) {
+        allRows = [];
+      } else {
+        allRows = data.table.rows.filter(r => {
+          // skip completely empty rows
+          if (!r.c) return false;
+          return r.c.some(c => c && c.v !== null && c.v !== undefined && c.v !== '');
+        });
+      }
+
+      renderAll();
+      showState('dashboard');
+    } catch (e) {
+      console.error(e);
+      document.getElementById('error-msg').textContent = e.message || 'Unknown error';
+      showState('error');
+    }
+  }
+
+  // ── RENDER ───────────────────────────────────────────────────────────────────
+  function renderAll() {
+    updateCards();
+    updateCharts();
+    renderTable();
+  }
+
+  function updateCards() {
+    const total      = allRows.length;
+    const ready      = allRows.filter(r => String(cellRaw(r, COL.status)).toUpperCase() === 'READY_FOR_REVIEW').length;
+    const incomplete = allRows.filter(r => String(cellRaw(r, COL.status)).toUpperCase() === 'INCOMPLETE').length;
+    const high       = allRows.filter(r => String(cellRaw(r, COL.priority)).toUpperCase() === 'HIGH').length;
+
+    document.getElementById('card-total').textContent      = total;
+    document.getElementById('card-ready').textContent      = ready;
+    document.getElementById('card-incomplete').textContent = incomplete;
+    document.getElementById('card-high').textContent       = high;
+  }
+
+  function updateCharts() {
+    const ready      = allRows.filter(r => String(cellRaw(r, COL.status)).toUpperCase() === 'READY_FOR_REVIEW').length;
+    const incomplete = allRows.length - ready;
+
+    // Donut
+    const donutCtx = document.getElementById('donutChart').getContext('2d');
+    if (donutChart) donutChart.destroy();
+    donutChart = new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Ready for Review', 'Incomplete'],
+        datasets: [{
+          data: [ready, incomplete],
+          backgroundColor: ['#16a34a', '#dc2626'],
+          borderColor: ['#fff','#fff'],
+          borderWidth: 3,
+          hoverOffset: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 12, family: 'Inter' }, padding: 14, boxWidth: 12, boxHeight: 12 }
+          },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } }
+        }
+      }
+    });
+
+    // Bar — by line of business
+    const lobCounts = {};
+    allRows.forEach(r => {
+      const lob = cellRaw(r, COL.line_of_business) || 'Unknown';
+      lobCounts[lob] = (lobCounts[lob] || 0) + 1;
+    });
+    const lobLabels = Object.keys(lobCounts).sort((a,b) => lobCounts[b] - lobCounts[a]);
+    const lobData   = lobLabels.map(l => lobCounts[l]);
+
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    if (barChart) barChart.destroy();
+    barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: lobLabels,
+        datasets: [{
+          label: 'Submissions',
+          data: lobData,
+          backgroundColor: '#3b82f6cc',
+          borderColor: '#1e40af',
+          borderWidth: 1.5,
+          borderRadius: 5,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} submission${ctx.parsed.y !== 1 ? 's' : ''}` } }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11, family: 'Inter' }, maxRotation: 30 }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } },
+            grid: { color: '#f1f5f9' }
+          }
+        }
+      }
+    });
+  }
+
+  function getFilteredRows() {
+    const search = document.getElementById('search-input').value.toLowerCase().trim();
+    return allRows.filter(r => {
+      const status   = String(cellRaw(r, COL.status)).toUpperCase();
+      const priority = String(cellRaw(r, COL.priority)).toUpperCase();
+      if (activeStatus !== 'all' && status !== activeStatus) return false;
+      if (activePriority !== 'all' && priority !== activePriority) return false;
+      if (search) {
+        const insured  = String(cellRaw(r, COL.insured_name) || '').toLowerCase();
+        const producer = String(cellRaw(r, COL.producer_name) || '').toLowerCase();
+        if (!insured.includes(search) && !producer.includes(search)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderTable() {
+    const rows   = getFilteredRows();
+    const tbody  = document.getElementById('table-body');
+    const rcEl   = document.getElementById('row-count');
+    rcEl.textContent = rows.length + ' result' + (rows.length !== 1 ? 's' : '');
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">No matching submissions</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map((r, i) => {
+      const status    = String(cellRaw(r, COL.status) || '').toUpperCase();
+      const priority  = String(cellRaw(r, COL.priority) || '');
+      const emoji     = cellRaw(r, COL.priority_emoji) || '';
+      const comp      = pctNum(cellRaw(r, COL.completeness_score));
+      const conf      = pctNum(cellRaw(r, COL.confidence_score));
+      const cls       = status === 'READY_FOR_REVIEW' ? 'status-ready' : status === 'INCOMPLETE' ? 'status-incomplete' : '';
+
+      return `<tr class="${cls}" onclick="openPanel(${allRows.indexOf(r)})">
+        <td>${fmtDate(cellRaw(r, COL.received_at))}</td>
+        <td style="font-weight:600;">${cellRaw(r, COL.insured_name) || '—'}</td>
+        <td><span class="badge badge-blue">${cellRaw(r, COL.line_of_business) || '—'}</span></td>
+        <td>${cellRaw(r, COL.insured_state) || '—'}</td>
+        <td>${fmtRevenue(cellRaw(r, COL.annual_revenue))}</td>
+        <td>
+          <div class="progress-wrap">
+            <div class="progress-bar">
+              <div class="progress-fill ${progressClass(comp)}" style="width:${comp}%"></div>
+            </div>
+            <span class="progress-pct" style="color:${comp>=80?'var(--green)':comp>=50?'var(--yellow)':'var(--red)'}">${comp}%</span>
+          </div>
+        </td>
+        <td><span style="font-weight:600;color:${conf>=80?'var(--green)':conf>=50?'var(--yellow)':'var(--red)'}">${conf}%</span></td>
+        <td>${priorityBadge(priority, emoji)}</td>
+        <td>${statusBadge(status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── DETAIL PANEL ─────────────────────────────────────────────────────────────
+  function openPanel(idx) {
+    const r         = allRows[idx];
+    if (!r) return;
+
+    const status    = String(cellRaw(r, COL.status) || '');
+    const priority  = String(cellRaw(r, COL.priority) || '');
+    const emoji     = cellRaw(r, COL.priority_emoji) || '';
+    const comp      = pctNum(cellRaw(r, COL.completeness_score));
+    const conf      = pctNum(cellRaw(r, COL.confidence_score));
+    const missing_f = splitList(cellRaw(r, COL.missing_fields));
+    const missing_d = splitList(cellRaw(r, COL.missing_documents));
+    const notes     = cellRaw(r, COL.processing_notes) || '';
+
+    document.getElementById('panel-sub-id').textContent   = cellRaw(r, COL.submission_id) || '';
+    document.getElementById('panel-sub-name').textContent = cellRaw(r, COL.insured_name)  || '—';
+
+    const mkTag = (label, val) =>
+      `<div class="panel-row"><span class="panel-key">${label}</span><span class="panel-val">${val || '—'}</span></div>`;
+
+    const mkMissing = (items, label) => {
+      if (!items.length) return `<div class="panel-row"><span class="panel-key">${label}</span><span class="panel-val"><span class="panel-list-item empty-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>None</span></span></div>`;
+      return `<div class="panel-row" style="flex-direction:column;gap:4px;"><span class="panel-key" style="margin-bottom:2px;">${label}</span><div class="panel-list">${items.map(i=>`<span class="panel-list-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${i}</span>`).join('')}</div></div>`;
+    };
+
+    document.getElementById('panel-body').innerHTML = `
+      <div class="panel-section">
+        <div class="panel-section-title">Submission Overview</div>
+        ${mkTag('Received', fmtDate(cellRaw(r, COL.received_at)))}
+        ${mkTag('Status', statusBadge(status.toUpperCase()))}
+        ${mkTag('Priority', priorityBadge(priority, emoji))}
+        ${mkTag('Type', cellRaw(r, COL.submission_type))}
+        ${mkTag('Effective Date', fmtDate(cellRaw(r, COL.effective_date)))}
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">Insured Information</div>
+        ${mkTag('Insured Name', cellRaw(r, COL.insured_name))}
+        ${mkTag('State', cellRaw(r, COL.insured_state))}
+        ${mkTag('Annual Revenue', fmtRevenue(cellRaw(r, COL.annual_revenue)))}
+        ${mkTag('Line of Business', cellRaw(r, COL.line_of_business))}
+        ${mkTag('Prior Carrier', cellRaw(r, COL.prior_carrier))}
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">Quality Scores</div>
+        <div class="panel-row" style="flex-direction:column;gap:6px;">
+          <span class="panel-key">Completeness — ${comp}%</span>
+          <div class="big-progress"><div class="big-progress-fill ${progressClass(comp)}" style="width:${comp}%"></div></div>
+        </div>
+        <div class="panel-row" style="flex-direction:column;gap:6px;margin-top:10px;">
+          <span class="panel-key">Confidence — ${conf}%</span>
+          <div class="big-progress"><div class="big-progress-fill ${progressClass(conf)}" style="width:${conf}%"></div></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">Missing Information</div>
+        ${mkMissing(missing_f, 'Missing Fields')}
+        <div style="margin-top:8px;"></div>
+        ${mkMissing(missing_d, 'Missing Documents')}
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">Producer Contact</div>
+        ${mkTag('Producer Name', cellRaw(r, COL.producer_name))}
+        ${mkTag('Producer Email', cellRaw(r, COL.producer_email) ? `<a href="mailto:${cellRaw(r, COL.producer_email)}" style="color:var(--blue);text-decoration:none;">${cellRaw(r, COL.producer_email)}</a>` : '—')}
+      </div>
+
+      ${notes ? `<div class="panel-section">
+        <div class="panel-section-title">Processing Notes</div>
+        <div class="panel-notes">${notes}</div>
+      </div>` : ''}
+    `;
+
+    document.getElementById('panel-overlay').classList.add('open');
+    document.getElementById('detail-panel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePanel() {
+    document.getElementById('panel-overlay').classList.remove('open');
+    document.getElementById('detail-panel').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Keyboard close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+  // ── FILTERS ──────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      const value  = btn.dataset.value;
+      document.querySelectorAll(`.filter-btn[data-filter="${filter}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (filter === 'status')   activeStatus   = value;
+      if (filter === 'priority') activePriority = value;
+      renderTable();
+    });
+  });
+
+  // ── STATE MANAGEMENT ─────────────────────────────────────────────────────────
+  function showState(state) {
+    document.getElementById('loading-state').style.display = state === 'loading'   ? 'block' : 'none';
+    document.getElementById('error-state').style.display   = state === 'error'     ? 'block' : 'none';
+    document.getElementById('empty-state').style.display   = state === 'empty'     ? 'block' : 'none';
+    document.getElementById('dashboard').style.display     = state === 'dashboard' ? 'block' : 'none';
+  }
+
+  // ── COUNTDOWN ────────────────────────────────────────────────────────────────
+  function resetCountdown() {
+    countdownVal = 60;
+    document.getElementById('countdown').textContent = countdownVal;
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+      countdownVal--;
+      document.getElementById('countdown').textContent = countdownVal;
+      if (countdownVal <= 0) {
+        clearInterval(countdownTimer);
+        fetchData();
+      }
+    }, 1000);
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────────────────
+  showState('loading');
+  fetchData();
+</script>
+</body>
+</html>
