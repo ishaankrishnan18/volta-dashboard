@@ -1124,6 +1124,43 @@
     processing_notes:   18,
   };
 
+  // ── COLOR PALETTE ───────────────────────────────────────────────────────────
+  const LOB_COLORS = {
+    'General Liability': '#3b82f6',
+    'BOP':               '#8b5cf6',
+    'Commercial Auto':   '#f97316',
+    'Workers Comp':      '#10b981',
+    'Property':          '#06b6d4',
+  };
+  const CHART_PALETTE = ['#3b82f6','#8b5cf6','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#ec4899'];
+  function getLobColor(lob, idx) {
+    return LOB_COLORS[lob] || CHART_PALETTE[idx % CHART_PALETTE.length];
+  }
+
+  // ── DONUT CENTER LABEL PLUGIN ────────────────────────────────────────────────
+  Chart.register({
+    id: 'centerLabel',
+    afterDraw(chart) {
+      if (chart.config.type !== 'doughnut') return;
+      const { ctx, chartArea, data } = chart;
+      const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+      if (!total) return;
+      const pct = Math.round((data.datasets[0].data[0] / total) * 100);
+      const cx = (chartArea.left + chartArea.right) / 2;
+      const cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.font = 'bold 22px Inter, -apple-system, sans-serif';
+      ctx.fillStyle = '#111827';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(pct + '%', cx, cy - 9);
+      ctx.font = '600 11px Inter, -apple-system, sans-serif';
+      ctx.fillStyle = '#6b7280';
+      ctx.fillText('complete', cx, cy + 11);
+      ctx.restore();
+    }
+  });
+
   // ── STATE ───────────────────────────────────────────────────────────────────
   let allRows        = [];
   let currentTab     = 'dashboard';
@@ -1308,7 +1345,7 @@
         labels: ['Ready for Review', 'Incomplete'],
         datasets: [{
           data: [ready, incomplete],
-          backgroundColor: ['#16a34a', '#dc2626'],
+          backgroundColor: ['#10b981', '#ef4444'],
           borderColor: ['#fff','#fff'],
           borderWidth: 3,
           hoverOffset: 6,
@@ -1332,6 +1369,8 @@
     });
     const lobLabels = Object.keys(lobCounts).sort((a,b) => lobCounts[b] - lobCounts[a]);
     const lobData   = lobLabels.map(l => lobCounts[l]);
+    const lobBgColors     = lobLabels.map((l, i) => getLobColor(l, i) + 'cc');
+    const lobBorderColors = lobLabels.map((l, i) => getLobColor(l, i));
 
     const barCtx = document.getElementById('barChart').getContext('2d');
     if (barChart) barChart.destroy();
@@ -1342,10 +1381,10 @@
         datasets: [{
           label: 'Submissions',
           data: lobData,
-          backgroundColor: '#3b82f6cc',
-          borderColor: '#1e40af',
+          backgroundColor: lobBgColors,
+          borderColor: lobBorderColors,
           borderWidth: 1.5,
-          borderRadius: 5,
+          borderRadius: 8,
           borderSkipped: false,
         }]
       },
@@ -1573,7 +1612,7 @@
 
     const lineDefaults = (label, data, color) => ({
       type: 'line',
-      data: { labels: weekLabels, datasets: [{ label, data, borderColor: color, backgroundColor: color + '22', fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2 }] },
+      data: { labels: weekLabels, datasets: [{ label, data, borderColor: color, backgroundColor: color + '26', fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5 }] },
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}` } } },
@@ -1591,7 +1630,7 @@
 
     analyticsCharts.weekComp = new Chart(
       document.getElementById('weeklyCompletenessChart').getContext('2d'),
-      lineDefaults('Avg Completeness %', weekAvgComp, '#16a34a')
+      lineDefaults('Avg Completeness %', weekAvgComp, '#3b82f6')
     );
 
     // Top producers (horizontal bar)
@@ -1607,7 +1646,7 @@
         type: 'bar',
         data: {
           labels: topProducers.map(p => p[0]),
-          datasets: [{ label: 'Submissions', data: topProducers.map(p => p[1]), backgroundColor: '#3b82f6cc', borderColor: '#1e40af', borderWidth: 1.5, borderRadius: 4, borderSkipped: false }]
+          datasets: [{ label: 'Submissions', data: topProducers.map(p => p[1]), backgroundColor: topProducers.map((_, i) => CHART_PALETTE[i % CHART_PALETTE.length] + 'cc'), borderColor: topProducers.map((_, i) => CHART_PALETTE[i % CHART_PALETTE.length]), borderWidth: 1.5, borderRadius: 8, borderSkipped: false }]
         },
         options: {
           indexAxis: 'y',
@@ -1628,7 +1667,7 @@
       lobCounts[lob] = (lobCounts[lob] || 0) + 1;
     });
     const lobEntries = Object.entries(lobCounts).sort((a,b) => b[1]-a[1]);
-    const pieColors = ['#3b82f6','#16a34a','#ea580c','#ca8a04','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+    const pieColors = lobEntries.map((e, i) => getLobColor(e[0], i));
     analyticsCharts.lob = new Chart(
       document.getElementById('lobPieChart').getContext('2d'),
       {
