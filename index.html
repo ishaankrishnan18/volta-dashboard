@@ -281,9 +281,6 @@
       margin-bottom: 14px;
       letter-spacing: -.2px;
     }
-    .chart-wrap {
-      position: relative;
-    }
     #donut-wrap  { height: 200px; display: flex; align-items: center; justify-content: center; }
     #bar-wrap    { height: 200px; }
 
@@ -336,7 +333,7 @@
       position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
       width: 14px; height: 14px; color: var(--text-muted); pointer-events: none;
     }
-    #search-input {
+    .search-input {
       width: 100%;
       padding: 6px 10px 6px 32px;
       border: 1px solid var(--border);
@@ -347,7 +344,7 @@
       outline: none;
       transition: border-color .15s;
     }
-    #search-input:focus { border-color: var(--blue-light); background: white; }
+    .search-input:focus { border-color: var(--blue-light); background: white; }
 
     /* ── TABLE ── */
     .table-card {
@@ -363,13 +360,19 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
     .table-header-title {
       font-size: 13.5px;
       font-weight: 700;
       color: var(--text);
     }
-    #row-count {
+    .table-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .row-count {
       font-size: 12px;
       color: var(--text-muted);
       background: var(--bg);
@@ -377,9 +380,26 @@
       border-radius: 5px;
       border: 1px solid var(--border);
     }
+    .export-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .export-btn:hover { border-color: var(--blue-light); color: var(--blue); }
+    .export-btn svg { width: 13px; height: 13px; }
     .table-scroll { overflow-x: auto; }
     table {
       width: 100%;
+      min-width: 900px;
       border-collapse: collapse;
     }
     thead th {
@@ -394,6 +414,13 @@
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
+    thead th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    thead th.sortable:hover { color: var(--blue); }
+    thead th.sort-asc::after  { content: ' ↑'; color: var(--blue); }
+    thead th.sort-desc::after { content: ' ↓'; color: var(--blue); }
     tbody tr {
       border-bottom: 1px solid var(--border);
       cursor: pointer;
@@ -495,7 +522,6 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .panel-header-info {}
     .panel-id { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 2px; }
     .panel-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
     #panel-close {
@@ -569,11 +595,6 @@
       background: var(--green-pale);
       color: var(--green);
     }
-    .confidence-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
     .big-progress {
       flex: 1;
       height: 8px;
@@ -598,10 +619,98 @@
       line-height: 1.6;
     }
 
+    /* ── ANALYTICS ── */
+    .analytics-charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .analytics-chart-wrap { height: 220px; }
+    .analytics-stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.3px;
+      line-height: 1.2;
+    }
+    .stat-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── COMING SOON ── */
+    .coming-soon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .coming-soon-icon {
+      width: 64px; height: 64px;
+      background: var(--blue-pale);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .coming-soon h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -.3px;
+    }
+    .coming-soon p {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    .coming-soon-badge {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: var(--blue-pale);
+      color: var(--blue);
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
     /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) {
+      .analytics-stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 1024px) {
       .cards-row { grid-template-columns: repeat(2, 1fr); }
       .charts-row { grid-template-columns: 1fr; }
+      .analytics-charts-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
       :root { --sidebar-w: 0px; }
@@ -612,6 +721,7 @@
       #topbar { padding: 0 16px; }
       .cards-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
       .filter-bar { gap: 8px; }
+      .analytics-stats-row { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 500px) {
       .cards-row { grid-template-columns: 1fr 1fr; }
@@ -639,25 +749,25 @@
 
   <div class="sidebar-nav">
     <div class="nav-label">Submissions</div>
-    <a class="nav-item active" href="#">
+    <a class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" data-tab="all-submissions" onclick="switchTab('all-submissions')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
       All Submissions
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" data-tab="analytics" onclick="switchTab('analytics')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Analytics
     </a>
 
     <div class="nav-label">Management</div>
-    <a class="nav-item" href="#">
+    <a class="nav-item" data-tab="producers" onclick="switchTab('producers')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Producers
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" data-tab="settings" onclick="switchTab('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       Settings
     </a>
@@ -671,8 +781,8 @@
   <!-- TOPBAR -->
   <header id="topbar">
     <div class="topbar-left">
-      <h1>Submission Intake</h1>
-      <p>Commercial P&amp;C — Live Dashboard</p>
+      <h1 id="topbar-title">Submission Intake</h1>
+      <p id="topbar-sub">Commercial P&amp;C — Live Dashboard</p>
     </div>
     <div class="topbar-right">
       <div id="refresh-info">
@@ -707,115 +817,265 @@
       <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">The sheet appears to be empty or no rows match your filters.</p>
     </div>
 
-    <!-- DASHBOARD (hidden until data loads) -->
-    <div id="dashboard" style="display:none;">
+    <!-- TABS CONTAINER (shown after data loads) -->
+    <div id="tabs-container" style="display:none;">
 
-      <!-- CARDS -->
-      <div class="cards-row">
-        <div class="card blue">
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      <!-- ── TAB: DASHBOARD ── -->
+      <div id="tab-dashboard" class="tab-content">
+
+        <!-- CARDS -->
+        <div class="cards-row">
+          <div class="card blue">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="card-value" id="card-total">—</div>
+              <div class="card-label">Total Submissions</div>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="card-value" id="card-total">—</div>
-            <div class="card-label">Total Submissions</div>
+          <div class="card green">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="card-value" id="card-ready">—</div>
+              <div class="card-label">Ready for Review</div>
+            </div>
+          </div>
+          <div class="card red">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="card-value" id="card-incomplete">—</div>
+              <div class="card-label">Incomplete</div>
+            </div>
+          </div>
+          <div class="card orange">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="card-value" id="card-high">—</div>
+              <div class="card-label">High Priority</div>
+            </div>
           </div>
         </div>
-        <div class="card green">
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+
+        <!-- CHARTS -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Complete vs Incomplete</div>
+            <div id="donut-wrap">
+              <canvas id="donutChart" width="200" height="200"></canvas>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="card-value" id="card-ready">—</div>
-            <div class="card-label">Ready for Review</div>
-          </div>
-        </div>
-        <div class="card red">
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <div class="card-body">
-            <div class="card-value" id="card-incomplete">—</div>
-            <div class="card-label">Incomplete</div>
+          <div class="chart-card">
+            <div class="chart-title">Submissions by Line of Business</div>
+            <div id="bar-wrap">
+              <canvas id="barChart"></canvas>
+            </div>
           </div>
         </div>
-        <div class="card orange">
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+
+        <!-- FILTERS -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label>Status</label>
+            <button class="filter-btn active" data-scope="dash" data-filter="status" data-value="all">All</button>
+            <button class="filter-btn" data-scope="dash" data-filter="status" data-value="READY_FOR_REVIEW">Ready</button>
+            <button class="filter-btn" data-scope="dash" data-filter="status" data-value="INCOMPLETE">Incomplete</button>
           </div>
-          <div class="card-body">
-            <div class="card-value" id="card-high">—</div>
-            <div class="card-label">High Priority</div>
+          <div class="filter-divider"></div>
+          <div class="filter-group">
+            <label>Priority</label>
+            <button class="filter-btn active" data-scope="dash" data-filter="priority" data-value="all">All</button>
+            <button class="filter-btn" data-scope="dash" data-filter="priority" data-value="HIGH">High</button>
+            <button class="filter-btn" data-scope="dash" data-filter="priority" data-value="MEDIUM">Medium</button>
+            <button class="filter-btn" data-scope="dash" data-filter="priority" data-value="LOW">Low</button>
+          </div>
+          <div class="filter-divider"></div>
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="dash-search" placeholder="Search insured or producer…" oninput="renderDashTable()" />
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-header-title">Recent Submissions</div>
+            <div class="table-header-right">
+              <div class="row-count" id="dash-row-count">0 results</div>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Received</th>
+                  <th>Insured Name</th>
+                  <th>Line of Business</th>
+                  <th>State</th>
+                  <th>Revenue</th>
+                  <th>Completeness</th>
+                  <th>Confidence</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="dash-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /tab-dashboard -->
+
+      <!-- ── TAB: ALL SUBMISSIONS ── -->
+      <div id="tab-all-submissions" class="tab-content" style="display:none;">
+
+        <!-- FILTERS -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label>Status</label>
+            <button class="filter-btn active" data-scope="all" data-filter="status" data-value="all">All</button>
+            <button class="filter-btn" data-scope="all" data-filter="status" data-value="READY_FOR_REVIEW">Ready</button>
+            <button class="filter-btn" data-scope="all" data-filter="status" data-value="INCOMPLETE">Incomplete</button>
+          </div>
+          <div class="filter-divider"></div>
+          <div class="filter-group">
+            <label>Priority</label>
+            <button class="filter-btn active" data-scope="all" data-filter="priority" data-value="all">All</button>
+            <button class="filter-btn" data-scope="all" data-filter="priority" data-value="HIGH">High</button>
+            <button class="filter-btn" data-scope="all" data-filter="priority" data-value="MEDIUM">Medium</button>
+            <button class="filter-btn" data-scope="all" data-filter="priority" data-value="LOW">Low</button>
+          </div>
+          <div class="filter-divider"></div>
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="all-sub-search" placeholder="Search insured or producer…" oninput="renderAllSubmissions()" />
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-header-title">All Submissions</div>
+            <div class="table-header-right">
+              <div class="row-count" id="all-sub-row-count">0 results</div>
+              <button class="export-btn" onclick="exportCSV()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table id="all-sub-table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-col="received_at">Received</th>
+                  <th class="sortable" data-col="insured_name">Insured Name</th>
+                  <th class="sortable" data-col="line_of_business">Line of Business</th>
+                  <th class="sortable" data-col="insured_state">State</th>
+                  <th class="sortable" data-col="annual_revenue">Revenue</th>
+                  <th class="sortable" data-col="effective_date">Effective Date</th>
+                  <th class="sortable" data-col="completeness_score">Completeness</th>
+                  <th class="sortable" data-col="confidence_score">Confidence</th>
+                  <th class="sortable" data-col="priority">Priority</th>
+                  <th class="sortable" data-col="status">Status</th>
+                </tr>
+              </thead>
+              <tbody id="all-sub-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /tab-all-submissions -->
+
+      <!-- ── TAB: ANALYTICS ── -->
+      <div id="tab-analytics" class="tab-content" style="display:none;">
+
+        <div class="analytics-charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Submissions per Week</div>
+            <div class="analytics-chart-wrap">
+              <canvas id="weeklySubmissionsChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Avg Completeness Score per Week</div>
+            <div class="analytics-chart-wrap">
+              <canvas id="weeklyCompletenessChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Top Producers by Submission Count</div>
+            <div class="analytics-chart-wrap">
+              <canvas id="topProducersChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">LOB Breakdown</div>
+            <div class="analytics-chart-wrap">
+              <canvas id="lobPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Submissions</div>
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-sub">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Completeness</div>
+            <div class="stat-value" id="stat-avg-completeness">—</div>
+            <div class="stat-sub">Across all submissions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Most Active Producer</div>
+            <div class="stat-value" id="stat-top-producer" style="font-size:15px;">—</div>
+            <div class="stat-sub" id="stat-top-producer-count"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Most Common LOB</div>
+            <div class="stat-value" id="stat-top-lob" style="font-size:15px;">—</div>
+            <div class="stat-sub" id="stat-top-lob-count"></div>
+          </div>
+        </div>
+
+      </div><!-- /tab-analytics -->
+
+      <!-- ── TAB: PRODUCERS ── -->
+      <div id="tab-producers" class="tab-content" style="display:none;">
+        <div class="coming-soon">
+          <div class="coming-soon-icon">👥</div>
+          <h2>Producers</h2>
+          <p>Producer management, performance tracking, and contact details are coming soon.</p>
+          <div class="coming-soon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Coming Soon
           </div>
         </div>
       </div>
 
-      <!-- CHARTS -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <div class="chart-title">Complete vs Incomplete</div>
-          <div id="donut-wrap">
-            <canvas id="donutChart" width="200" height="200"></canvas>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Submissions by Line of Business</div>
-          <div id="bar-wrap">
-            <canvas id="barChart"></canvas>
+      <!-- ── TAB: SETTINGS ── -->
+      <div id="tab-settings" class="tab-content" style="display:none;">
+        <div class="coming-soon">
+          <div class="coming-soon-icon">⚙️</div>
+          <h2>Settings</h2>
+          <p>Configure your dashboard preferences, notification rules, and integrations here.</p>
+          <div class="coming-soon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Coming Soon
           </div>
         </div>
       </div>
 
-      <!-- FILTERS -->
-      <div class="filter-bar">
-        <div class="filter-group">
-          <label>Status</label>
-          <button class="filter-btn active" data-filter="status" data-value="all">All</button>
-          <button class="filter-btn" data-filter="status" data-value="READY_FOR_REVIEW">Ready</button>
-          <button class="filter-btn" data-filter="status" data-value="INCOMPLETE">Incomplete</button>
-        </div>
-        <div class="filter-divider"></div>
-        <div class="filter-group">
-          <label>Priority</label>
-          <button class="filter-btn active" data-filter="priority" data-value="all">All</button>
-          <button class="filter-btn" data-filter="priority" data-value="HIGH">High</button>
-          <button class="filter-btn" data-filter="priority" data-value="MEDIUM">Medium</button>
-          <button class="filter-btn" data-filter="priority" data-value="LOW">Low</button>
-        </div>
-        <div class="filter-divider"></div>
-        <div class="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="search-input" placeholder="Search insured or producer…" oninput="renderTable()" />
-        </div>
-      </div>
+    </div><!-- /tabs-container -->
 
-      <!-- TABLE -->
-      <div class="table-card">
-        <div class="table-header">
-          <div class="table-header-title">Submissions</div>
-          <div id="row-count">0 results</div>
-        </div>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Received</th>
-                <th>Insured Name</th>
-                <th>Line of Business</th>
-                <th>State</th>
-                <th>Revenue</th>
-                <th>Completeness</th>
-                <th>Confidence</th>
-                <th>Priority</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </div><!-- /dashboard -->
   </main>
 </div><!-- /main -->
 
@@ -842,7 +1102,6 @@
   const SHEET_NAME = 'Submissions Log';
   const API_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
-  // Column indices (0-based), matching the stated order
   const COL = {
     submission_id:      0,
     received_at:        1,
@@ -866,11 +1125,21 @@
   };
 
   // ── STATE ───────────────────────────────────────────────────────────────────
-  let allRows      = [];
-  let activeStatus   = 'all';
-  let activePriority = 'all';
+  let allRows        = [];
+  let currentTab     = 'dashboard';
+  // Dashboard filters
+  let dashStatus     = 'all';
+  let dashPriority   = 'all';
+  // All-submissions filters
+  let allSubStatus   = 'all';
+  let allSubPriority = 'all';
+  let allSubSortCol  = 'received_at';
+  let allSubSortDir  = 'desc';
+  // Charts
   let donutChart     = null;
   let barChart       = null;
+  let analyticsCharts = {};
+  // Countdown
   let countdownVal   = 60;
   let countdownTimer = null;
 
@@ -878,7 +1147,6 @@
   function cellVal(row, idx) {
     const c = row.c ? row.c[idx] : null;
     if (!c || c.v === null || c.v === undefined) return '';
-    // For formatted value use c.f, else c.v
     return c.f !== undefined && c.f !== null ? String(c.f) : String(c.v);
   }
   function cellRaw(row, idx) {
@@ -889,7 +1157,6 @@
 
   function fmtDate(raw) {
     if (!raw) return '—';
-    // gviz returns dates as "Date(year,month0,day)" strings or native dates
     let d;
     if (typeof raw === 'string' && raw.startsWith('Date(')) {
       const parts = raw.replace('Date(','').replace(')','').split(',').map(Number);
@@ -899,6 +1166,18 @@
     }
     if (isNaN(d)) return raw;
     return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  function parseDate(raw) {
+    if (!raw) return null;
+    let d;
+    if (typeof raw === 'string' && raw.startsWith('Date(')) {
+      const parts = raw.replace('Date(','').replace(')','').split(',').map(Number);
+      d = new Date(parts[0], parts[1], parts[2]);
+    } else {
+      d = new Date(raw);
+    }
+    return isNaN(d) ? null : d;
   }
 
   function fmtRevenue(val) {
@@ -915,7 +1194,6 @@
     if (val === '' || val === null || val === undefined) return '—';
     const n = parseFloat(val);
     if (isNaN(n)) return val;
-    // handle decimal 0–1 range
     return (n <= 1 ? Math.round(n * 100) : Math.round(n)) + '%';
   }
 
@@ -953,6 +1231,21 @@
     return `<span class="badge badge-gray">${status}</span>`;
   }
 
+  function getWeekKey(raw) {
+    const d = parseDate(raw);
+    if (!d) return null;
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const mon = new Date(d);
+    mon.setDate(diff);
+    return mon.toISOString().slice(0, 10);
+  }
+
+  function weekLabel(isoKey) {
+    const d = new Date(isoKey + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  }
+
   // ── FETCH ────────────────────────────────────────────────────────────────────
   async function fetchData() {
     showState('loading');
@@ -960,24 +1253,22 @@
     try {
       const res  = await fetch(API_URL + '&t=' + Date.now());
       const text = await res.text();
-      // Strip JSONP wrapper
       const json = text
-        .replace(/^[^(]+\(/, '')  // remove everything up to first (
-        .replace(/\);\s*$/, '');  // remove trailing );
+        .replace(/^[^(]+\(/, '')
+        .replace(/\);\s*$/, '');
       const data = JSON.parse(json);
 
       if (!data.table || !data.table.rows) {
         allRows = [];
       } else {
         allRows = data.table.rows.filter(r => {
-          // skip completely empty rows
           if (!r.c) return false;
           return r.c.some(c => c && c.v !== null && c.v !== undefined && c.v !== '');
         });
       }
 
       renderAll();
-      showState('dashboard');
+      showState('tabs');
     } catch (e) {
       console.error(e);
       document.getElementById('error-msg').textContent = e.message || 'Unknown error';
@@ -988,8 +1279,10 @@
   // ── RENDER ───────────────────────────────────────────────────────────────────
   function renderAll() {
     updateCards();
-    updateCharts();
-    renderTable();
+    updateDashCharts();
+    renderDashTable();
+    if (currentTab === 'all-submissions') renderAllSubmissions();
+    if (currentTab === 'analytics') renderAnalytics();
   }
 
   function updateCards() {
@@ -997,18 +1290,16 @@
     const ready      = allRows.filter(r => String(cellRaw(r, COL.status)).toUpperCase() === 'READY_FOR_REVIEW').length;
     const incomplete = allRows.filter(r => String(cellRaw(r, COL.status)).toUpperCase() === 'INCOMPLETE').length;
     const high       = allRows.filter(r => String(cellRaw(r, COL.priority)).toUpperCase() === 'HIGH').length;
-
     document.getElementById('card-total').textContent      = total;
     document.getElementById('card-ready').textContent      = ready;
     document.getElementById('card-incomplete').textContent = incomplete;
     document.getElementById('card-high').textContent       = high;
   }
 
-  function updateCharts() {
+  function updateDashCharts() {
     const ready      = allRows.filter(r => String(cellRaw(r, COL.status)).toUpperCase() === 'READY_FOR_REVIEW').length;
     const incomplete = allRows.length - ready;
 
-    // Donut
     const donutCtx = document.getElementById('donutChart').getContext('2d');
     if (donutChart) donutChart.destroy();
     donutChart = new Chart(donutCtx, {
@@ -1028,16 +1319,12 @@
         maintainAspectRatio: false,
         cutout: '65%',
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { font: { size: 12, family: 'Inter' }, padding: 14, boxWidth: 12, boxHeight: 12 }
-          },
+          legend: { position: 'bottom', labels: { font: { size: 12, family: 'Inter' }, padding: 14, boxWidth: 12, boxHeight: 12 } },
           tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } }
         }
       }
     });
 
-    // Bar — by line of business
     const lobCounts = {};
     allRows.forEach(r => {
       const lob = cellRaw(r, COL.line_of_business) || 'Unknown';
@@ -1070,27 +1357,20 @@
           tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} submission${ctx.parsed.y !== 1 ? 's' : ''}` } }
         },
         scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 11, family: 'Inter' }, maxRotation: 30 }
-          },
-          y: {
-            beginAtZero: true,
-            ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } },
-            grid: { color: '#f1f5f9' }
-          }
+          x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Inter' }, maxRotation: 30 } },
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } }, grid: { color: '#f1f5f9' } }
         }
       }
     });
   }
 
-  function getFilteredRows() {
-    const search = document.getElementById('search-input').value.toLowerCase().trim();
+  function getDashFilteredRows() {
+    const search = (document.getElementById('dash-search').value || '').toLowerCase().trim();
     return allRows.filter(r => {
       const status   = String(cellRaw(r, COL.status)).toUpperCase();
       const priority = String(cellRaw(r, COL.priority)).toUpperCase();
-      if (activeStatus !== 'all' && status !== activeStatus) return false;
-      if (activePriority !== 'all' && priority !== activePriority) return false;
+      if (dashStatus !== 'all' && status !== dashStatus) return false;
+      if (dashPriority !== 'all' && priority !== dashPriority) return false;
       if (search) {
         const insured  = String(cellRaw(r, COL.insured_name) || '').toLowerCase();
         const producer = String(cellRaw(r, COL.producer_name) || '').toLowerCase();
@@ -1100,26 +1380,25 @@
     });
   }
 
-  function renderTable() {
-    const rows   = getFilteredRows();
-    const tbody  = document.getElementById('table-body');
-    const rcEl   = document.getElementById('row-count');
-    rcEl.textContent = rows.length + ' result' + (rows.length !== 1 ? 's' : '');
+  function renderDashTable() {
+    const rows  = getDashFilteredRows();
+    const tbody = document.getElementById('dash-table-body');
+    document.getElementById('dash-row-count').textContent = rows.length + ' result' + (rows.length !== 1 ? 's' : '');
 
     if (rows.length === 0) {
       tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">No matching submissions</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = rows.map((r, i) => {
-      const status    = String(cellRaw(r, COL.status) || '').toUpperCase();
-      const priority  = String(cellRaw(r, COL.priority) || '');
-      const emoji     = cellRaw(r, COL.priority_emoji) || '';
-      const comp      = pctNum(cellRaw(r, COL.completeness_score));
-      const conf      = pctNum(cellRaw(r, COL.confidence_score));
-      const cls       = status === 'READY_FOR_REVIEW' ? 'status-ready' : status === 'INCOMPLETE' ? 'status-incomplete' : '';
-
-      return `<tr class="${cls}" onclick="openPanel(${allRows.indexOf(r)})">
+    tbody.innerHTML = rows.map(r => {
+      const status   = String(cellRaw(r, COL.status) || '').toUpperCase();
+      const priority = String(cellRaw(r, COL.priority) || '');
+      const emoji    = cellRaw(r, COL.priority_emoji) || '';
+      const comp     = pctNum(cellRaw(r, COL.completeness_score));
+      const conf     = pctNum(cellRaw(r, COL.confidence_score));
+      const cls      = status === 'READY_FOR_REVIEW' ? 'status-ready' : status === 'INCOMPLETE' ? 'status-incomplete' : '';
+      const idx      = allRows.indexOf(r);
+      return `<tr class="${cls}" onclick="openPanel(${idx})">
         <td>${fmtDate(cellRaw(r, COL.received_at))}</td>
         <td style="font-weight:600;">${cellRaw(r, COL.insured_name) || '—'}</td>
         <td><span class="badge badge-blue">${cellRaw(r, COL.line_of_business) || '—'}</span></td>
@@ -1127,9 +1406,7 @@
         <td>${fmtRevenue(cellRaw(r, COL.annual_revenue))}</td>
         <td>
           <div class="progress-wrap">
-            <div class="progress-bar">
-              <div class="progress-fill ${progressClass(comp)}" style="width:${comp}%"></div>
-            </div>
+            <div class="progress-bar"><div class="progress-fill ${progressClass(comp)}" style="width:${comp}%"></div></div>
             <span class="progress-pct" style="color:${comp>=80?'var(--green)':comp>=50?'var(--yellow)':'var(--red)'}">${comp}%</span>
           </div>
         </td>
@@ -1140,19 +1417,268 @@
     }).join('');
   }
 
+  // ── ALL SUBMISSIONS TAB ───────────────────────────────────────────────────────
+  function getAllSubFilteredRows() {
+    const search = (document.getElementById('all-sub-search').value || '').toLowerCase().trim();
+    return allRows.filter(r => {
+      const status   = String(cellRaw(r, COL.status)).toUpperCase();
+      const priority = String(cellRaw(r, COL.priority)).toUpperCase();
+      if (allSubStatus !== 'all' && status !== allSubStatus) return false;
+      if (allSubPriority !== 'all' && priority !== allSubPriority) return false;
+      if (search) {
+        const insured  = String(cellRaw(r, COL.insured_name) || '').toLowerCase();
+        const producer = String(cellRaw(r, COL.producer_name) || '').toLowerCase();
+        if (!insured.includes(search) && !producer.includes(search)) return false;
+      }
+      return true;
+    });
+  }
+
+  function getSortValue(row, col) {
+    const raw = cellRaw(row, COL[col]);
+    if (col === 'received_at' || col === 'effective_date') {
+      const d = parseDate(raw);
+      return d ? d.getTime() : 0;
+    }
+    if (col === 'completeness_score' || col === 'confidence_score') return pctNum(raw);
+    if (col === 'annual_revenue') {
+      const n = parseFloat(String(raw).replace(/[^0-9.]/g,''));
+      return isNaN(n) ? 0 : n;
+    }
+    return String(raw || '').toLowerCase();
+  }
+
+  function renderAllSubmissions() {
+    const rows = getAllSubFilteredRows();
+    const sorted = [...rows].sort((a, b) => {
+      const av = getSortValue(a, allSubSortCol);
+      const bv = getSortValue(b, allSubSortCol);
+      const dir = allSubSortDir === 'asc' ? 1 : -1;
+      if (av < bv) return -dir;
+      if (av > bv) return dir;
+      return 0;
+    });
+
+    document.getElementById('all-sub-row-count').textContent = sorted.length + ' result' + (sorted.length !== 1 ? 's' : '');
+
+    // Update sort indicators on headers
+    document.querySelectorAll('#all-sub-table thead th').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (th.dataset.col === allSubSortCol) {
+        th.classList.add(allSubSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      }
+    });
+
+    const tbody = document.getElementById('all-sub-table-body');
+    if (sorted.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted);">No matching submissions</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = sorted.map(r => {
+      const status   = String(cellRaw(r, COL.status) || '').toUpperCase();
+      const priority = String(cellRaw(r, COL.priority) || '');
+      const emoji    = cellRaw(r, COL.priority_emoji) || '';
+      const comp     = pctNum(cellRaw(r, COL.completeness_score));
+      const conf     = pctNum(cellRaw(r, COL.confidence_score));
+      const cls      = status === 'READY_FOR_REVIEW' ? 'status-ready' : status === 'INCOMPLETE' ? 'status-incomplete' : '';
+      const idx      = allRows.indexOf(r);
+      return `<tr class="${cls}" onclick="openPanel(${idx})">
+        <td>${fmtDate(cellRaw(r, COL.received_at))}</td>
+        <td style="font-weight:600;">${cellRaw(r, COL.insured_name) || '—'}</td>
+        <td><span class="badge badge-blue">${cellRaw(r, COL.line_of_business) || '—'}</span></td>
+        <td>${cellRaw(r, COL.insured_state) || '—'}</td>
+        <td>${fmtRevenue(cellRaw(r, COL.annual_revenue))}</td>
+        <td>${fmtDate(cellRaw(r, COL.effective_date))}</td>
+        <td>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill ${progressClass(comp)}" style="width:${comp}%"></div></div>
+            <span class="progress-pct" style="color:${comp>=80?'var(--green)':comp>=50?'var(--yellow)':'var(--red)'}">${comp}%</span>
+          </div>
+        </td>
+        <td><span style="font-weight:600;color:${conf>=80?'var(--green)':conf>=50?'var(--yellow)':'var(--red)'}">${conf}%</span></td>
+        <td>${priorityBadge(priority, emoji)}</td>
+        <td>${statusBadge(status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Sort header click listener (set up after DOM ready)
+  function initAllSubSort() {
+    document.querySelectorAll('#all-sub-table thead th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (allSubSortCol === col) {
+          allSubSortDir = allSubSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          allSubSortCol = col;
+          allSubSortDir = 'desc';
+        }
+        renderAllSubmissions();
+      });
+    });
+  }
+
+  function exportCSV() {
+    const rows = getAllSubFilteredRows();
+    const headers = ['Received','Insured Name','Line of Business','State','Revenue','Effective Date','Completeness %','Confidence %','Priority','Status','Submission ID','Producer Name','Producer Email','Prior Carrier'];
+    const csvRows = [headers.join(',')];
+    rows.forEach(r => {
+      const row = [
+        fmtDate(cellRaw(r, COL.received_at)),
+        cellRaw(r, COL.insured_name),
+        cellRaw(r, COL.line_of_business),
+        cellRaw(r, COL.insured_state),
+        fmtRevenue(cellRaw(r, COL.annual_revenue)),
+        fmtDate(cellRaw(r, COL.effective_date)),
+        pctNum(cellRaw(r, COL.completeness_score)),
+        pctNum(cellRaw(r, COL.confidence_score)),
+        cellRaw(r, COL.priority),
+        cellRaw(r, COL.status),
+        cellRaw(r, COL.submission_id),
+        cellRaw(r, COL.producer_name),
+        cellRaw(r, COL.producer_email),
+        cellRaw(r, COL.prior_carrier),
+      ].map(v => `"${String(v || '').replace(/"/g, '""')}"`);
+      csvRows.push(row.join(','));
+    });
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = 'submissions_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── ANALYTICS TAB ────────────────────────────────────────────────────────────
+  function renderAnalytics() {
+    // Destroy previous charts
+    Object.values(analyticsCharts).forEach(c => { if (c) c.destroy(); });
+    analyticsCharts = {};
+
+    // Build week buckets
+    const weekData = {};
+    allRows.forEach(r => {
+      const key = getWeekKey(cellRaw(r, COL.received_at));
+      if (!key) return;
+      if (!weekData[key]) weekData[key] = { count: 0, compTotal: 0 };
+      weekData[key].count++;
+      weekData[key].compTotal += pctNum(cellRaw(r, COL.completeness_score));
+    });
+    const weeks = Object.keys(weekData).sort().slice(-12);
+    const weekLabels  = weeks.map(weekLabel);
+    const weekCounts  = weeks.map(w => weekData[w].count);
+    const weekAvgComp = weeks.map(w => Math.round(weekData[w].compTotal / weekData[w].count));
+
+    const lineDefaults = (label, data, color) => ({
+      type: 'line',
+      data: { labels: weekLabels, datasets: [{ label, data, borderColor: color, backgroundColor: color + '22', fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}` } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Inter' }, maxRotation: 30 } },
+          y: { beginAtZero: true, ticks: { font: { size: 11, family: 'Inter' } }, grid: { color: '#f1f5f9' } }
+        }
+      }
+    });
+
+    analyticsCharts.weekSubs = new Chart(
+      document.getElementById('weeklySubmissionsChart').getContext('2d'),
+      lineDefaults('Submissions', weekCounts, '#3b82f6')
+    );
+
+    analyticsCharts.weekComp = new Chart(
+      document.getElementById('weeklyCompletenessChart').getContext('2d'),
+      lineDefaults('Avg Completeness %', weekAvgComp, '#16a34a')
+    );
+
+    // Top producers (horizontal bar)
+    const prodCounts = {};
+    allRows.forEach(r => {
+      const p = cellRaw(r, COL.producer_name) || 'Unknown';
+      prodCounts[p] = (prodCounts[p] || 0) + 1;
+    });
+    const topProducers = Object.entries(prodCounts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+    analyticsCharts.producers = new Chart(
+      document.getElementById('topProducersChart').getContext('2d'),
+      {
+        type: 'bar',
+        data: {
+          labels: topProducers.map(p => p[0]),
+          datasets: [{ label: 'Submissions', data: topProducers.map(p => p[1]), backgroundColor: '#3b82f6cc', borderColor: '#1e40af', borderWidth: 1.5, borderRadius: 4, borderSkipped: false }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } }, grid: { color: '#f1f5f9' } },
+            y: { grid: { display: false }, ticks: { font: { size: 11, family: 'Inter' } } }
+          }
+        }
+      }
+    );
+
+    // LOB pie
+    const lobCounts = {};
+    allRows.forEach(r => {
+      const lob = cellRaw(r, COL.line_of_business) || 'Unknown';
+      lobCounts[lob] = (lobCounts[lob] || 0) + 1;
+    });
+    const lobEntries = Object.entries(lobCounts).sort((a,b) => b[1]-a[1]);
+    const pieColors = ['#3b82f6','#16a34a','#ea580c','#ca8a04','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+    analyticsCharts.lob = new Chart(
+      document.getElementById('lobPieChart').getContext('2d'),
+      {
+        type: 'pie',
+        data: {
+          labels: lobEntries.map(e => e[0]),
+          datasets: [{ data: lobEntries.map(e => e[1]), backgroundColor: pieColors, borderColor: '#fff', borderWidth: 2, hoverOffset: 6 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'right', labels: { font: { size: 11, family: 'Inter' }, padding: 10, boxWidth: 12, boxHeight: 12 } },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } }
+          }
+        }
+      }
+    );
+
+    // Stat cards
+    document.getElementById('stat-total').textContent = allRows.length;
+
+    const avgComp = allRows.length
+      ? Math.round(allRows.reduce((s, r) => s + pctNum(cellRaw(r, COL.completeness_score)), 0) / allRows.length)
+      : 0;
+    document.getElementById('stat-avg-completeness').textContent = avgComp + '%';
+
+    if (topProducers.length) {
+      document.getElementById('stat-top-producer').textContent = topProducers[0][0];
+      document.getElementById('stat-top-producer-count').textContent = topProducers[0][1] + ' submission' + (topProducers[0][1] !== 1 ? 's' : '');
+    }
+
+    if (lobEntries.length) {
+      document.getElementById('stat-top-lob').textContent = lobEntries[0][0];
+      document.getElementById('stat-top-lob-count').textContent = lobEntries[0][1] + ' submission' + (lobEntries[0][1] !== 1 ? 's' : '');
+    }
+  }
+
   // ── DETAIL PANEL ─────────────────────────────────────────────────────────────
   function openPanel(idx) {
-    const r         = allRows[idx];
+    const r = allRows[idx];
     if (!r) return;
 
-    const status    = String(cellRaw(r, COL.status) || '');
-    const priority  = String(cellRaw(r, COL.priority) || '');
-    const emoji     = cellRaw(r, COL.priority_emoji) || '';
-    const comp      = pctNum(cellRaw(r, COL.completeness_score));
-    const conf      = pctNum(cellRaw(r, COL.confidence_score));
+    const status   = String(cellRaw(r, COL.status) || '');
+    const priority = String(cellRaw(r, COL.priority) || '');
+    const emoji    = cellRaw(r, COL.priority_emoji) || '';
+    const comp     = pctNum(cellRaw(r, COL.completeness_score));
+    const conf     = pctNum(cellRaw(r, COL.confidence_score));
     const missing_f = splitList(cellRaw(r, COL.missing_fields));
     const missing_d = splitList(cellRaw(r, COL.missing_documents));
-    const notes     = cellRaw(r, COL.processing_notes) || '';
+    const notes    = cellRaw(r, COL.processing_notes) || '';
 
     document.getElementById('panel-sub-id').textContent   = cellRaw(r, COL.submission_id) || '';
     document.getElementById('panel-sub-name').textContent = cellRaw(r, COL.insured_name)  || '—';
@@ -1174,7 +1700,6 @@
         ${mkTag('Type', cellRaw(r, COL.submission_type))}
         ${mkTag('Effective Date', fmtDate(cellRaw(r, COL.effective_date)))}
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Insured Information</div>
         ${mkTag('Insured Name', cellRaw(r, COL.insured_name))}
@@ -1183,7 +1708,6 @@
         ${mkTag('Line of Business', cellRaw(r, COL.line_of_business))}
         ${mkTag('Prior Carrier', cellRaw(r, COL.prior_carrier))}
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Quality Scores</div>
         <div class="panel-row" style="flex-direction:column;gap:6px;">
@@ -1195,20 +1719,17 @@
           <div class="big-progress"><div class="big-progress-fill ${progressClass(conf)}" style="width:${conf}%"></div></div>
         </div>
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Missing Information</div>
         ${mkMissing(missing_f, 'Missing Fields')}
         <div style="margin-top:8px;"></div>
         ${mkMissing(missing_d, 'Missing Documents')}
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Producer Contact</div>
         ${mkTag('Producer Name', cellRaw(r, COL.producer_name))}
         ${mkTag('Producer Email', cellRaw(r, COL.producer_email) ? `<a href="mailto:${cellRaw(r, COL.producer_email)}" style="color:var(--blue);text-decoration:none;">${cellRaw(r, COL.producer_email)}</a>` : '—')}
       </div>
-
       ${notes ? `<div class="panel-section">
         <div class="panel-section-title">Processing Notes</div>
         <div class="panel-notes">${notes}</div>
@@ -1226,28 +1747,57 @@
     document.body.style.overflow = '';
   }
 
-  // Keyboard close
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
 
-  // ── FILTERS ──────────────────────────────────────────────────────────────────
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const filter = btn.dataset.filter;
-      const value  = btn.dataset.value;
-      document.querySelectorAll(`.filter-btn[data-filter="${filter}"]`).forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (filter === 'status')   activeStatus   = value;
-      if (filter === 'priority') activePriority = value;
-      renderTable();
-    });
+  // ── TAB SWITCHING ────────────────────────────────────────────────────────────
+  const TAB_TITLES = {
+    'dashboard':       { h1: 'Submission Intake',  sub: 'Commercial P&C — Live Dashboard' },
+    'all-submissions': { h1: 'All Submissions',     sub: 'Full submission log with sorting & export' },
+    'analytics':       { h1: 'Analytics',           sub: 'Performance trends and insights' },
+    'producers':       { h1: 'Producers',           sub: 'Producer management' },
+    'settings':        { h1: 'Settings',            sub: 'Dashboard configuration' },
+  };
+
+  function switchTab(tabName) {
+    currentTab = tabName;
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-' + tabName).style.display = 'block';
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector(`.nav-item[data-tab="${tabName}"]`).classList.add('active');
+    const meta = TAB_TITLES[tabName] || { h1: tabName, sub: '' };
+    document.getElementById('topbar-title').textContent = meta.h1;
+    document.getElementById('topbar-sub').textContent   = meta.sub;
+    if (tabName === 'analytics' && allRows.length) renderAnalytics();
+    if (tabName === 'all-submissions' && allRows.length) renderAllSubmissions();
+  }
+
+  // ── FILTER WIRE-UP ───────────────────────────────────────────────────────────
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    const scope  = btn.dataset.scope;
+    const filter = btn.dataset.filter;
+    const value  = btn.dataset.value;
+    document.querySelectorAll(`.filter-btn[data-scope="${scope}"][data-filter="${filter}"]`)
+      .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (scope === 'dash') {
+      if (filter === 'status')   dashStatus   = value;
+      if (filter === 'priority') dashPriority = value;
+      renderDashTable();
+    } else if (scope === 'all') {
+      if (filter === 'status')   allSubStatus   = value;
+      if (filter === 'priority') allSubPriority = value;
+      renderAllSubmissions();
+    }
   });
 
   // ── STATE MANAGEMENT ─────────────────────────────────────────────────────────
   function showState(state) {
-    document.getElementById('loading-state').style.display = state === 'loading'   ? 'block' : 'none';
-    document.getElementById('error-state').style.display   = state === 'error'     ? 'block' : 'none';
-    document.getElementById('empty-state').style.display   = state === 'empty'     ? 'block' : 'none';
-    document.getElementById('dashboard').style.display     = state === 'dashboard' ? 'block' : 'none';
+    document.getElementById('loading-state').style.display = state === 'loading' ? 'block' : 'none';
+    document.getElementById('error-state').style.display   = state === 'error'   ? 'block' : 'none';
+    document.getElementById('empty-state').style.display   = state === 'empty'   ? 'block' : 'none';
+    document.getElementById('tabs-container').style.display = state === 'tabs'   ? 'block' : 'none';
   }
 
   // ── COUNTDOWN ────────────────────────────────────────────────────────────────
@@ -1266,6 +1816,7 @@
   }
 
   // ── INIT ─────────────────────────────────────────────────────────────────────
+  initAllSubSort();
   showState('loading');
   fetchData();
 </script>
