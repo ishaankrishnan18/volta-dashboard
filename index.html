@@ -1300,6 +1300,9 @@
       } else {
         allRows = data.table.rows.filter(r => {
           if (!r.c) return false;
+          // gviz returns the header row as a data row when the sheet has no data
+          const firstVal = r.c[0] && r.c[0].v;
+          if (typeof firstVal === 'string' && firstVal.toLowerCase() === 'submission_id') return false;
           return r.c.some(c => c && c.v !== null && c.v !== undefined && c.v !== '');
         });
       }
